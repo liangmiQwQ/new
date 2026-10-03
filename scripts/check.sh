@@ -39,6 +39,9 @@ for stack in "${stacks[@]}"; do
     esac
     # Formatting and building must not leave tracked changes behind
     git diff --exit-code
+    # Stand in for the agent writing `{{TODO: ...}}` placeholders
+    perl -pi -e 's/\{\{TODO:[^}]*\}\}/Filled by the agent./g' AGENTS.md
+    "$root/skills/creating-projects/scripts/verify.sh"
   )
   echo "::endgroup::"
 done

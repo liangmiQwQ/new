@@ -47,7 +47,15 @@ After scaffolding:
 
 1. Write every `{{TODO: ...}}` placeholder the script prints, mostly in `AGENTS.md`. Delete a section instead of leaving it empty. Keep a new project's `AGENTS.md` short (around 40 lines), it should only hold non-obvious rules and gotchas.
 2. Adjust the scaffold to the project: the package name (for example a scoped npm name), extra crates or packages, CLI binaries, and the CI matrix.
-3. Run the stack's checks before finishing: `just ready` for Rust, `vp run check && vp run build && vp run test` for JavaScript.
+3. Set the GitHub repo settings (squash merge only, PR title and description as the commit message, auto delete branches, a description):
+
+   ```bash
+   gh repo edit <owner>/<repo> --description "<description>" --enable-squash-merge --enable-merge-commit=false --enable-rebase-merge=false --delete-branch-on-merge
+   gh api -X PATCH repos/<owner>/<repo> -f squash_merge_commit_title=PR_TITLE -f squash_merge_commit_message=PR_BODY
+   ```
+
+4. Run the stack's checks: `just ready` for Rust, `vp run check && vp run build && vp run test` for JavaScript.
+5. Run `scripts/verify.sh <root>/<owner>/<repo>` and fix everything it reports. It checks the pieces agents often miss, and also works for projects built without a template.
 
 If a template itself is wrong or outdated, fix it in the `liangmiQwQ/new` repository instead of only patching the generated project.
 
@@ -57,7 +65,7 @@ When you are initializing a project, like handling infrastructure and related da
 
 ## Aspects of a project
 
-When you are initializing a project, you should care about these aspect:
+When you are initializing a project, you should care about these aspects. `scripts/verify.sh` checks the files and settings it can, the rest is on you:
 
 1. Project layout (single-package, or a workspace, one language or multiple-languages mixed)
 2. Basic toolchain (Do not only care about build, care about linting, formatting, testing, git hooks, staging)
