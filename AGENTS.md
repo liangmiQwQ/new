@@ -14,6 +14,8 @@ Never pin dependency versions in templates. Add them in `setup.sh` so new projec
 
 Templates may contain invalid code before placeholders are filled, so they are not linted or formatted directly. Run `scripts/check.sh [stack...]` to scaffold stacks into a temporary directory and run their own checks after you change a template.
 
+`skills/creating-projects/scripts/verify.sh` checks the pieces every new project needs, and `scripts/check.sh` runs it on each scaffolded stack. When a template gains or drops a required piece, update `verify.sh` too.
+
 ## Rules
 
 Keep the common `AGENTS.md` template close to the rules shared by Liang's existing projects. Only add a rule to it when most new projects need it.
