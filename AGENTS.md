@@ -22,6 +22,8 @@ Keep the common `AGENTS.md` template close to the rules shared by Liang's existi
 
 Keep templates small. A template is a starting point that the agent adjusts, not a framework.
 
+Templates keep the file shape, not config owned by a fast-moving tool. Leave such a file as a `{{TODO: ...}}` that points to the tool's skill (like `vite.config.ts` and `$use-vp-config`), so a breaking release doesn't make templates and skills disagree. `scripts/check.sh` fills it with a stand-in to test the rest of the template.
+
 Keep AGENTS.md updated with the project codebase. Only record non-obvious rules and gotchas in AGENTS.md.
 
 Commit messages and PR titles follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).

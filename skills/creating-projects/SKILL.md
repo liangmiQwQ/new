@@ -45,7 +45,7 @@ The script copies the layers in order, renames `_name` paths to `.name` and `__r
 
 After scaffolding:
 
-1. Write every `{{TODO: ...}}` placeholder the script prints, mostly in `AGENTS.md`. Delete a section instead of leaving it empty. Keep a new project's `AGENTS.md` short (around 40 lines), it should only hold non-obvious rules and gotchas.
+1. Write every `{{TODO: ...}}` placeholder the script prints, mostly in `AGENTS.md`. Config owned by a fast-moving tool, like `vite.config.ts` for `@liangmi/vp-config`, is left as a placeholder; write it by following that tool's skill. Delete a section instead of leaving it empty. Keep a new project's `AGENTS.md` short (around 40 lines), it should only hold non-obvious rules and gotchas.
 2. Adjust the scaffold to the project: the package name (for example a scoped npm name), extra crates or packages, CLI binaries, and the CI matrix.
 3. Set the GitHub repo settings (squash merge only, PR title and description as the commit message, auto delete branches, a description):
 
