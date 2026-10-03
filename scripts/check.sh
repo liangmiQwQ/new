@@ -24,6 +24,22 @@ check_js() {
   vp run test
 }
 
+# Stand in for the agent writing `{{TODO: ...}}` placeholders.
+# Preset configs here follow the released `@liangmi/vp-config`, new projects follow `$use-vp-config` instead.
+fill() {
+  perl -pi -e 's/\{\{TODO:[^}]*\}\}/Filled by the agent./g' AGENTS.md
+  case "$stack" in
+    js-lib)
+      printf '%s\n' "import { lib } from '@liangmi/vp-config'" "export default lib({ pack: { entry: ['./src/index.ts'] } })" >| vite.config.ts
+      vp check --fix
+      ;;
+    js-cli)
+      printf '%s\n' "import { cli } from '@liangmi/vp-config'" "export default cli({ pack: { entry: ['./src/index.ts'], deps: { onlyBundle: ['cac', 'picocolors'] } } })" >| vite.config.ts
+      vp check --fix
+      ;;
+  esac
+}
+
 for stack in "${stacks[@]}"; do
   echo "::group::$stack"
   dest="$work/demo-$stack"
@@ -32,6 +48,7 @@ for stack in "${stacks[@]}"; do
   "$root/skills/creating-projects/scripts/scaffold.sh" "$stack" "$dest" liangmiQwQ "demo-$stack" "A demo project"
   (
     cd "$dest"
+    fill
     git add -A
     case "$stack" in
       rust) check_rust ;;
@@ -39,8 +56,6 @@ for stack in "${stacks[@]}"; do
     esac
     # Formatting and building must not leave tracked changes behind
     git diff --exit-code
-    # Stand in for the agent writing `{{TODO: ...}}` placeholders
-    perl -pi -e 's/\{\{TODO:[^}]*\}\}/Filled by the agent./g' AGENTS.md
     "$root/skills/creating-projects/scripts/verify.sh"
   )
   echo "::endgroup::"

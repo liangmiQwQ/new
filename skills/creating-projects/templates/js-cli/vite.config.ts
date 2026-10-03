@@ -1,10 +1,2 @@
-import { cli } from '@liangmi/vp-config'
-
-export default cli({
-  pack: {
-    entry: ['./src/index.ts'],
-    deps: {
-      onlyBundle: ['cac', 'picocolors']
-    }
-  }
-})
+// {{TODO: Write the `@liangmi/vp-config` config by following `$use-vp-config`, then run `vp check --fix`.}}
+export default {}
