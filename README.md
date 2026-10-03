@@ -23,11 +23,7 @@ Templates are layered under [`skills/creating-projects/templates`](./skills/crea
 | `js-lib` | `common` + `js` + `js-lib` |
 | `js-cli` | `common` + `js` + `js-cli` |
 
-```bash
-skills/creating-projects/scripts/scaffold.sh rust ~/code/liangmiQwQ/foo liangmiQwQ foo "A foo crate"
-```
-
-Templates don't pin dependency versions. Each layer's `setup.sh` adds them at their latest versions when scaffolding, and CI scaffolds every stack weekly to catch breakage.
+The `creating-projects` skill tells the agent how to copy the layers and fill them. Templates don't pin dependency versions, the agent adds them at their latest versions.
 
 ## License
 

@@ -14,7 +14,7 @@
 
 ## Rules
 
-If you find AGENTS.md is outdated, please tell users to change in response.
+If you find AGENTS.md is outdated, please notice users to change in response.
 
 Keep code functional. Write simple code that junior developers can understand, and make functions reusable if possible. Use Unix philosophy to design your code (Every function should only do one thing and should not be too long or complex).
 
