@@ -85,5 +85,6 @@ When you are initializing a project, you should care about these aspects:
 9. Tools version (Node version, Rust version)
 10. GitHub repo description, PR merge setting (Squash, Description as message, Auto delete branch)
 11. AGENTS.md document
+12. `.github/FUNDING.yml`, and Sponsorships button enable settings (only when users has public sponsor profile)
 
 You should prepare them in detail but should not make them too complex, for example, linting CI shouldn't be run on all macOS, Linux and Windows, a small library also doesn't need a VitePress website for docs, `.editorconfig` shouldn't be provided most of the time.
