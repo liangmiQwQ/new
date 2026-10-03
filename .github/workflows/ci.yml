@@ -1,0 +1,44 @@
+name: Template Check
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  # Templates add the latest dependencies, so they can break without any change here
+  schedule:
+    - cron: '0 0 * * 1'
+
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        stack: [rust, js-lib, js-cli]
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Rust
+        if: matrix.stack == 'rust'
+        uses: oxc-project/setup-rust@v1.0.17
+        with:
+          tools: just,cargo-shear,dprint
+          components: clippy rustfmt
+
+      - name: Setup Vite+
+        if: startsWith(matrix.stack, 'js-')
+        uses: voidzero-dev/setup-vp@v1
+        with:
+          node-version: lts/*
+
+      - name: Check ${{ matrix.stack }}
+        run: scripts/check.sh ${{ matrix.stack }}
