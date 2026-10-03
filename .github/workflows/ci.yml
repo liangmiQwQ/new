@@ -27,12 +27,18 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      # `oxc-project/setup-rust` needs a `rust-toolchain.toml` at the repo root, which only the template has
       - name: Setup Rust
         if: matrix.stack == 'rust'
-        uses: oxc-project/setup-rust@v1.0.17
+        uses: dtolnay/rust-toolchain@stable
         with:
-          tools: just,cargo-shear,dprint
-          components: clippy rustfmt
+          components: clippy, rustfmt
+
+      - name: Install Rust tools
+        if: matrix.stack == 'rust'
+        uses: taiki-e/install-action@v2
+        with:
+          tool: just,cargo-shear,dprint
 
       - name: Setup Vite+
         if: startsWith(matrix.stack, 'js-')
