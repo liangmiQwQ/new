@@ -7,13 +7,14 @@
 #   and `CONTRIBUTING.part.md` into `{{setup}}`
 # - fills `{{owner}}`, `{{repo}}`, `{{repo_ident}}`, `{{description}}`, `{{year}}`, `{{rust_version}}`
 # - runs every layer's `setup.sh` inside <dest>
+# - adds `.github/FUNDING.yml` when <owner> has a GitHub Sponsors profile
 #
 # `{{TODO: ...}}` placeholders are left for the agent to write.
 
 set -euo pipefail
 
 if [ $# -lt 4 ]; then
-  sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//' >&2
+  sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//' >&2
   exit 1
 fi
 
@@ -79,6 +80,12 @@ find "$dest" -type f -not -path "$dest/.git/*" -print0 | xargs -0 perl -pi -e '
   s/\{\{year\}\}/$ENV{YEAR}/g;
   s/\{\{rust_version\}\}/$ENV{RUST_VERSION}/g;
 '
+
+# Show the Sponsor button only for owners who can receive sponsorships
+if [ "$(gh api graphql -f query='query($login: String!) { repositoryOwner(login: $login) { ... on Sponsorable { hasSponsorsListing } } }' -f login="$OWNER" --jq '.data.repositoryOwner.hasSponsorsListing' 2>/dev/null)" = "true" ]; then
+  mkdir -p "$dest/.github"
+  echo "github: [$OWNER]" >"$dest/.github/FUNDING.yml"
+fi
 
 for layer in "${layers[@]}"; do
   if [ -f "$templates/$layer/setup.sh" ]; then

@@ -15,7 +15,7 @@ skills add liangmiQwQ/new
 
 ## Templates
 
-Templates are layered under [`skills/creating-projects/templates`](./skills/creating-projects/templates). Every stack starts from `common`, which carries the license, docs, PR title check and the `AGENTS.md` template.
+Templates are layered under [`skills/creating-projects/templates`](./skills/creating-projects/templates). Every stack starts from `common`, which carries the license, docs and the `AGENTS.md` template.
 
 | Stack    | Layers                     |
 | -------- | -------------------------- |

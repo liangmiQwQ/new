@@ -2,7 +2,7 @@
 # Usage: verify.sh [dir]
 #
 # Checks that a new project has the pieces agents easily miss, for any stack:
-# files, toolchain versions, unfilled placeholders, and GitHub repo settings.
+# files, toolchain versions, unfilled placeholders, GitHub repo settings and sponsors.
 # It does not run the project's own checks.
 
 set -uo pipefail
@@ -23,7 +23,7 @@ need() {
 
 # 1. Common files
 need README.md LICENSE AGENTS.md CONTRIBUTING.md .gitignore
-need .github/workflows/ci.yml .github/workflows/pr.yml
+need .github/workflows/ci.yml
 need .vscode/settings.json .vscode/extensions.json
 
 # 2. Stack files, websites (private packages) are deployed instead of released
@@ -58,6 +58,9 @@ else
   [ "$squash $merge $rebase" = "true false false" ] || fail "GitHub repo should only allow squash merging"
   [ "$delete_branch" = "true" ] || fail "GitHub repo should delete branches on merge"
   [ "$title $message" = "PR_TITLE PR_BODY" ] || fail "GitHub squash commits should use the PR title and description"
+  if [ "$(gh api graphql -f query='query($login: String!) { repositoryOwner(login: $login) { ... on Sponsorable { hasSponsorsListing } } }' -f login="${repo%%/*}" --jq '.data.repositoryOwner.hasSponsorsListing' 2>/dev/null)" = "true" ]; then
+    need .github/FUNDING.yml
+  fi
 fi
 
 [ $failed -eq 0 ] && echo "✓ project verified"

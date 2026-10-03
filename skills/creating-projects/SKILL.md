@@ -41,7 +41,7 @@ scripts/scaffold.sh <stack> <root>/<owner>/<repo> <owner> <repo> "<description>"
 
 Websites and napi-rs projects have no template yet. Build them by hand, still following `common` and the aspects below.
 
-The script copies the layers in order, renames `_name` paths to `.name` and `__repo__` paths to the repo name, fills the mechanical placeholders, and runs each layer's `setup.sh` to add dependencies with their latest versions. Never copy pinned dependency versions from other projects into a new one.
+The script copies the layers in order, renames `_name` paths to `.name` and `__repo__` paths to the repo name, fills the mechanical placeholders, adds `.github/FUNDING.yml` when the owner has a GitHub Sponsors profile, and runs each layer's `setup.sh` to add dependencies with their latest versions. Never copy pinned dependency versions from other projects into a new one.
 
 After scaffolding:
 
