@@ -4,7 +4,7 @@
 
 ## Templates
 
-Templates are layers under `skills/creating-projects/templates`, copied in order by the agent. The layer list of each stack and the copy steps live in `skills/creating-projects/SKILL.md`, so keep it in sync when a layer or placeholder changes.
+Templates are layers under `skills/creating-projects/templates`, copied in order by the agent. The layer list of each stack and the copy steps live in `skills/creating-projects/SKILL.md`, so keep it in sync when a layer or placeholder changes. The reasoning behind the steps, like how to read a request and what may change in a template, lives in `skills/creating-projects/guide.md`. Put new procedure in `SKILL.md` and new explanations in `guide.md`.
 
 - `_name` paths become `.name`, so dotfiles like `.github` and `.gitignore` don't affect this repo or get dropped by skill installers. `__repo__` in a path becomes the repo name.
 - `AGENTS.part.md` and `CONTRIBUTING.part.md` are merged into `{{toolchain}}` and `{{setup}}`, not copied.

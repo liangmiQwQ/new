@@ -9,6 +9,8 @@ When creating projects, what you should focus on is not the project code, but ev
 
 You can create a small placeholder like `todo!()` macro and `console.error()`. You can fill the code later if I required. If I don't require you implement any logic, just keep placeholders.
 
+**Read [guide.md](./guide.md) before writing any file.** It explains how to read the request, what you may change in a template and why, how to write the docs, and what to do when no template fits.
+
 ## Required initialization gate
 
 For a completely new project, finish the managed project initialization before writing any scaffold or project files:
@@ -38,22 +40,7 @@ Templates live in `templates/` next to this file. Load `$choosing-tools` to pick
 
 Websites and napi-rs projects have no template yet. Build them by hand, still following `common` and the aspects below.
 
-For a JavaScript workspace (monorepo), still use the `js-lib` or `js-cli` stack:
-
-- Copy `common` and `js` to the root. The root `package.json` comes from the stack's `package.json` with `"private": true`, the workspace name `<repo>-monorepo`, and only the root scripts (`check`, `prepare`, recursive `build`, `test` and `release`).
-- Copy the stack layer (`package.json`, `src`, `tests`, `vite.config.ts`) into `packages/<repo>`. That package keeps every template field, including `publishConfig`, and is not private.
-- The CI and release workflows stay as in the template. The release workflow publishes all public packages with `-r`.
-
-## Hard rules
-
-These apply to every stack, whatever the request says about layout:
-
-- Copy every template file. Never skip a file or rewrite one from scratch. The only changes you can make are filling placeholders and the adjustments in [After scaffolding](#after-scaffolding).
-- Keep the fixed text of `AGENTS.md`, `CONTRIBUTING.md` and the `*.part.md` files word for word. Only add text where a placeholder is.
-- Don't weaken the infrastructure: keep the separate lint and test jobs, the OS matrix, npm publishing and the changelog step.
-- Docs describe lasting facts. Never write the scaffold's current state ("not implemented yet", "empty entry point", "remove X later") or tool versions into `AGENTS.md`, `CONTRIBUTING.md` or `README.md`.
-- Keep a placeholder test in the template's test file. Never add `--passWithNoTests`.
-- If a request doesn't fit a template, ask the user or follow the closest template. Never drop the templates and improvise.
+For a workspace (monorepo), apply the stack in two levels as described in [guide.md](./guide.md#workspaces).
 
 While copying:
 
@@ -64,13 +51,13 @@ While copying:
 
 Templates don't pin dependency versions. Add them at their latest versions inside the new project instead, and never copy pinned versions from other projects:
 
-- `js`: Pin Vite+ to the version `@liangmi/vp-config` supports (`npm view @liangmi/vp-config peerDependencies.vite-plus`) in the `pnpm-workspace.yaml` catalog, aliasing `vite` to `npm:@voidzero-dev/vite-plus-core@<version>` overriding `vite@*` to `catalog:`, and allowing any `vite` version in `peerDependencyRules`. Write the current Node major version to `.node-version`. Then run `vp install -D vite@catalog: vite-plus@catalog: @liangmi/vp-config typescript @typescript/native-preview @types/node bumpp`.
-- `js-cli`: `vp install -D cac picocolors` (CLI dependencies are bundled).
+- `js`: Write the current Node major version to `.node-version`. Add `vite` (aliased to `npm:@voidzero-dev/vite-plus-core@<version>`), `vite-plus` (pinned to the version `@liangmi/vp-config` supports), `@liangmi/vp-config`, `typescript`, `@typescript/native-preview`, `@types/node` and `bumpp` to the catalog and to `devDependencies` as `catalog:`, as described in [guide.md](./guide.md#dependencies). Override `vite@*` to `catalog:` and allow any `vite` version in `peerDependencyRules`, then run `vp install`.
+- `js-cli`: Add `cac` and `picocolors` the same way, as dev dependencies (CLI dependencies are bundled).
 - `rust`: `cargo add insta --dev -p <repo>`, `cargo add criterion --dev -p benchmark`, `cargo add <repo> --path crates/<repo> --dev -p benchmark`, then `dprint config update --yes`.
 
 After scaffolding:
 
-1. Write every `{{TODO: ...}}` placeholder, mostly in `AGENTS.md`. Config owned by a fast-moving tool, like `vite.config.ts` for `@liangmi/vp-config`, is left as a placeholder; write it by following that tool's skill. Delete a section instead of leaving it empty. Keep what you write into `AGENTS.md` short, so the file stays around 40 lines. It should only add non-obvious rules and gotchas to the template's own rules, never replace them.
+1. Write every `{{TODO: ...}}` placeholder, mostly in `AGENTS.md`. Config owned by a fast-moving tool, like `vite.config.ts` for `@liangmi/vp-config`, is left as a placeholder; write it by following that tool's skill. Delete a section instead of leaving it empty. Keep what you write into `AGENTS.md` short, so the file stays around 40 lines.
 2. Adjust the scaffold to the project: the package name (for example a scoped npm name), extra crates or packages, CLI binaries, and the CI matrix.
 3. Set the GitHub repo settings (squash merge only, PR title and description as the commit message, auto delete branches, a description):
 
@@ -81,7 +68,7 @@ After scaffolding:
 
 4. Run the stack's checks: `just ready` for Rust, `vp run check && vp run build && vp run test` for JavaScript. They must not leave formatting changes behind.
 5. Search for `{{` to make sure no placeholder is left.
-6. Compare every generated file with its template file (`diff`). Each difference must be a filled placeholder or an adjustment from step 2. Restore anything else.
+6. `diff` every generated file against its template, and check each difference as described in [guide.md](./guide.md#changing-a-template-file).
 
 If a template itself is wrong or outdated, fix it in the `liangmiQwQ/new` repository instead of only patching the generated project.
 
