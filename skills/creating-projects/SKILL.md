@@ -15,11 +15,12 @@ For a completely new project, finish the managed project initialization before w
 
 1. Load the `$global-projects` skill and use its paired resolver to find the configured project root and project CLI.
 2. Resolve the repository owner and name. If either is missing or ambiguous, ask the user before creating the project directory.
-3. Resolve whether the repository should be public or private. If the user did not specify visibility, ask before continuing.
-4. Run the selected CLI's `init` command with the explicit visibility option from `<root>/<owner>/<repo>`.
-5. Verify the local path and `origin` remote, then create the scaffold inside that initialized repository (see [Templates](#templates)).
+3. Resolve whether the repository should be public or private. If the user did not specify visibility, ask before continuing. "Private" only sets the GitHub repository visibility. It never makes a package `private: true` and never removes npm publishing from the release workflow.
+4. Resolve a one-sentence description of what the project does. If the request doesn't say, ask. Never describe the scaffold instead, like "Private TypeScript workspace for <repo>".
+5. Run the selected CLI's `init` command with the explicit visibility option from `<root>/<owner>/<repo>`.
+6. Verify the local path and `origin` remote, then create the scaffold inside that initialized repository (see [Templates](#templates)).
 
-An explicit request to create or initialize a new project authorizes the managed initialization. Once the owner, name, and visibility are known, do not ask for a second confirmation before running `moi init --public`, `moi init --private`, or the paired `mo` command.
+An explicit request to create or initialize a new project authorizes the managed initialization. Once the owner, name, visibility, and description are known, do not ask for a second confirmation before running `moi init --public`, `moi init --private`, or the paired `mo` command.
 
 Do not create the project in the current task directory, `work/`, `outputs/`, or another artifact directory unless the user explicitly chose that location. Generic artifact-output guidance does not override the managed project workflow.
 
@@ -37,6 +38,23 @@ Templates live in `templates/` next to this file. Load `$choosing-tools` to pick
 
 Websites and napi-rs projects have no template yet. Build them by hand, still following `common` and the aspects below.
 
+For a JavaScript workspace (monorepo), still use the `js-lib` or `js-cli` stack:
+
+- Copy `common` and `js` to the root. The root `package.json` comes from the stack's `package.json` with `"private": true`, the workspace name `<repo>-monorepo`, and only the root scripts (`check`, `prepare`, recursive `build`, `test` and `release`).
+- Copy the stack layer (`package.json`, `src`, `tests`, `vite.config.ts`) into `packages/<repo>`. That package keeps every template field, including `publishConfig`, and is not private.
+- The CI and release workflows stay as in the template. The release workflow publishes all public packages with `-r`.
+
+## Hard rules
+
+These apply to every stack, whatever the request says about layout:
+
+- Copy every template file. Never skip a file or rewrite one from scratch. The only changes you can make are filling placeholders and the adjustments in [After scaffolding](#after-scaffolding).
+- Keep the fixed text of `AGENTS.md`, `CONTRIBUTING.md` and the `*.part.md` files word for word. Only add text where a placeholder is.
+- Don't weaken the infrastructure: keep the separate lint and test jobs, the OS matrix, npm publishing and the changelog step.
+- Docs describe lasting facts. Never write the scaffold's current state ("not implemented yet", "empty entry point", "remove X later") or tool versions into `AGENTS.md`, `CONTRIBUTING.md` or `README.md`.
+- Keep a placeholder test in the template's test file. Never add `--passWithNoTests`.
+- If a request doesn't fit a template, ask the user or follow the closest template. Never drop the templates and improvise.
+
 While copying:
 
 1. Rename `_name` paths to `.name`, and `__repo__` paths to the repo name.
@@ -52,7 +70,7 @@ Templates don't pin dependency versions. Add them at their latest versions insid
 
 After scaffolding:
 
-1. Write every `{{TODO: ...}}` placeholder, mostly in `AGENTS.md`. Config owned by a fast-moving tool, like `vite.config.ts` for `@liangmi/vp-config`, is left as a placeholder; write it by following that tool's skill. Delete a section instead of leaving it empty. Keep a new project's `AGENTS.md` short (around 40 lines), it should only hold non-obvious rules and gotchas.
+1. Write every `{{TODO: ...}}` placeholder, mostly in `AGENTS.md`. Config owned by a fast-moving tool, like `vite.config.ts` for `@liangmi/vp-config`, is left as a placeholder; write it by following that tool's skill. Delete a section instead of leaving it empty. Keep what you write into `AGENTS.md` short, so the file stays around 40 lines. It should only add non-obvious rules and gotchas to the template's own rules, never replace them.
 2. Adjust the scaffold to the project: the package name (for example a scoped npm name), extra crates or packages, CLI binaries, and the CI matrix.
 3. Set the GitHub repo settings (squash merge only, PR title and description as the commit message, auto delete branches, a description):
 
@@ -63,6 +81,7 @@ After scaffolding:
 
 4. Run the stack's checks: `just ready` for Rust, `vp run check && vp run build && vp run test` for JavaScript. They must not leave formatting changes behind.
 5. Search for `{{` to make sure no placeholder is left.
+6. Compare every generated file with its template file (`diff`). Each difference must be a filled placeholder or an adjustment from step 2. Restore anything else.
 
 If a template itself is wrong or outdated, fix it in the `liangmiQwQ/new` repository instead of only patching the generated project.
 
