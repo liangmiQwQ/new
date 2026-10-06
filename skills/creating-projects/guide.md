@@ -45,7 +45,7 @@ At the end, `diff` each generated file against its template. This catches the ch
 - Good: what the project is, who it is for, where things live, gotchas a newcomer can't see in the code (for example, that lint config only works in the root `vite.config.ts`).
 - Bad: the current state of the scaffold ("the entry point is empty", "no tests yet", "remove this flag later"), tool versions ("use the 0.6 API", "pnpm 12.9.1"), and anything a tool already enforces.
 
-Keep the fixed text of the templates word for word, and only write where a placeholder is. The template's headings are the whole structure: a project rule goes into the existing `## Rules` section, not into a new `## Scope` or `## Working conventions` section, and nothing in `AGENTS.md` repeats what `CONTRIBUTING.md` already tells everyone (how to install, which commands to run). The common rules at the end of `## Rules` stay, since agents in every project rely on them.
+Keep the fixed text of the templates word for word, and only write where a placeholder is. The headings are the whole structure: a project rule goes into the existing `## Rules` section, above the common rules, never into a new `## Scope` or `## Working conventions` section. `AGENTS.md` doesn't repeat what `CONTRIBUTING.md` already says about installing and running checks.
 
 When you merge `*.part.md` files into `{{toolchain}}` and `{{setup}}`, a part may bring its own `## Rules` section. Move those paragraphs into the template's existing `## Rules` section, above the common rules, instead of creating a second heading with the same name.
 
@@ -97,32 +97,24 @@ Everything the tool doesn't own stays as the template has it: the CI workflow, t
 
 ## When nothing fits
 
-Websites, napi-rs projects, mixed languages: some requests have no template. Start from the closest stack and keep its shape, its rules and its infrastructure. Build only the missing part by hand, and look at Liang's existing projects (`$global-projects`) for how they did it. If you can't decide something that changes the project's shape, like whether it publishes or what the packages are, ask.
+Websites, napi-rs projects, mixed languages: some requests have no template. Start from the closest stack and keep its shape, its rules and its infrastructure, so the project still gets everything a template gives: toolchain, CI, release or deploy, license and README, editor settings, tool versions, repo settings, `AGENTS.md` and funding. Build only the missing part by hand, and look at Liang's existing projects (`$global-projects`) for how they did it. If you can't decide something that changes the project's shape, like whether it publishes or what the packages are, ask.
 
 Never drop the templates because one part doesn't fit. That turns one unknown into a whole project of guesses.
 
-## A worked example
+## Mistakes seen in real scaffolds
 
-The request "create a project called oxlint-flat-config, private, typescript workspace" once produced a broken repo. Here is what went wrong, and what each step should have been:
+Two requests, "create oxlint-flat-config, private, typescript workspace" and "create goodfaith, a private CLI, with gunshi and uppt", produced broken repos. Here is what went wrong, and what each step should have been:
 
-| The agent did                                                        | It should have                                                                |
-| -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| Read "private" as "no publishing" and made every package private     | Made the GitHub repo private and kept the package publishable                 |
-| Had no description, so wrote "Private TypeScript workspace"          | Asked what the project does                                                   |
-| Found no workspace template and wrote every file from scratch        | Applied `js-lib` in two levels, as described in [Workspaces](#workspaces)     |
-| Cut `CONTRIBUTING.md` to 3 lines, replaced the `AGENTS.md` rules      | Kept the template text and only filled placeholders                           |
-| Merged CI into one Linux job, removed npm publishing from releases   | Kept both workflows unchanged                                                 |
-| Wrote "entry point is empty", "remove `--passWithNoTests` later"     | Wrote a throwing placeholder and a test for it, and only lasting facts        |
+| The agent did                                                                     | It should have                                                            |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Read "private" as "no publishing": `private: true`, no `publishConfig`            | Made the GitHub repo private and kept the package publishable             |
+| Had no description, so wrote "Private TypeScript workspace"                       | Asked what the project does                                               |
+| Found no workspace template and wrote every file from scratch                     | Applied `js-lib` in two levels, as described in [Workspaces](#workspaces) |
+| Cut `CONTRIBUTING.md` to 3 lines, added `## Scope` and `## Working conventions`   | Kept the template text and only filled placeholders                       |
+| Added Status, Development and Releases sections to `README.md`                    | Written one paragraph on what the project does                            |
+| Merged CI into one Linux job, or added `--help` steps and a `types:` filter to it | Left `ci.yml` unchanged and tested the binary in `tests/`                 |
+| Wrote a `release.yml` by hand that only validated and never published             | Copied uppt's starter workflow and moved the build to `prepack`           |
+| Wrote "entry point is empty", "remove `--passWithNoTests` later"                  | Wrote a throwing placeholder and a test for it, and only lasting facts    |
+| Set the version to `0.1.0` with an invented reason about uppt                     | Left `0.0.0`                                                              |
 
-A later request, "create goodfaith, a private CLI, with gunshi and uppt", went wrong in new ways even with the templates in hand:
-
-| The agent did                                                                         | It should have                                                       |
-| ------------------------------------------------------------------------------------- | -------------------------------------------------------------------- |
-| Set `private: true`, removed `publishConfig` and wrote "npm publishing is disabled"   | Kept the package publishable; "private" is the repository            |
-| Wrote a `release.yml` by hand that only validated and never packed or published       | Copied uppt's starter workflow and moved the build to `prepack`      |
-| Added `--help` and `--version` steps and a `types:` filter to `ci.yml`                | Left `ci.yml` untouched and tested the binary in `tests/`            |
-| Added `## Scope` and `## Working conventions` to `AGENTS.md` and dropped common rules | Put the two product rules at the top of `## Rules` and kept the rest |
-| Added Status, Development and Releases sections to `README.md`                        | Written one paragraph on what the project does                       |
-| Set the version to `0.1.0` with an invented reason about uppt                         | Left `0.0.0`                                                         |
-
-Each mistake was a reasonable local decision. Together they produced a repo that looked complete but didn't do what Liang's projects do. Following the templates, and asking about the two unclear words, avoids all of them.
+Each mistake was a reasonable local decision. Together they produced a repo that looked complete but didn't do what Liang's projects do. Following the templates, and asking about the unclear words, avoids all of them.
